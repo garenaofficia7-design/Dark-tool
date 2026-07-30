@@ -27,50 +27,6 @@
             overflow: hidden;
         }
 
-        /* CRT scanline effect */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: repeating-linear-gradient(0deg,
-                    rgba(0, 255, 65, 0.01) 0px,
-                    rgba(0, 255, 65, 0.01) 2px,
-                    transparent 2px,
-                    transparent 6px);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Glitch overlay */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 255, 65, 0.01);
-            pointer-events: none;
-            z-index: 1;
-            animation: flicker 8s infinite;
-        }
-
-        @keyframes flicker {
-            0%,
-            100% {
-                opacity: 0;
-            }
-            5% {
-                opacity: 0.02;
-            }
-            10% {
-                opacity: 0;
-            }
-            15% {
-                opacity: 0.01;
-            }
-            20% {
-                opacity: 0;
-            }
-        }
-
         .container {
             width: 100%;
             max-width: 900px;
@@ -95,6 +51,7 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
+            flex-shrink: 0;
         }
 
         .header .logo {
@@ -133,10 +90,6 @@
             animation: pulse 1.2s infinite;
         }
 
-        .header .status .dot.offline {
-            background: #ff0044;
-        }
-
         @keyframes pulse {
             0%,
             100% {
@@ -160,6 +113,7 @@
             font-size: 0.85rem;
             line-height: 1.8;
             background: #050505;
+            min-height: 0;
         }
 
         .messages::-webkit-scrollbar {
@@ -199,12 +153,6 @@
             padding-left: 14px;
         }
 
-        .message.ai .highlight {
-            color: #00ff41;
-            font-weight: 700;
-            text-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-        }
-
         .message.user {
             color: #3a7a5a;
             text-align: right;
@@ -223,26 +171,23 @@
             padding: 4px 0;
         }
 
-        .message.error {
-            color: #ff0044;
-            border-left-color: #ff004466;
-        }
-
+        /* ---------- INPUT AREA — FIXED ---------- */
         .input-area {
             padding: 14px 24px;
             background: #080808;
             border-top: 1px solid #00ff4122;
             display: flex;
             gap: 12px;
+            flex-shrink: 0;
+            align-items: center;
         }
 
         .input-area .prompt {
             color: #00ff41;
             font-weight: 700;
             font-size: 0.9rem;
-            display: flex;
-            align-items: center;
             opacity: 0.6;
+            white-space: nowrap;
         }
 
         .input-area input {
@@ -255,6 +200,7 @@
             font-size: 0.9rem;
             outline: none;
             font-family: 'Space Mono', monospace;
+            min-width: 0;
         }
 
         .input-area input:focus {
@@ -278,6 +224,7 @@
             transition: 0.3s;
             font-family: 'Space Mono', monospace;
             letter-spacing: 1px;
+            white-space: nowrap;
         }
 
         .input-area button:hover {
@@ -294,8 +241,10 @@
             border-top: 1px solid #00ff4111;
             letter-spacing: 2px;
             font-family: 'Inter', sans-serif;
+            flex-shrink: 0;
         }
 
+        /* RESPONSIVE */
         @media (max-width: 600px) {
             .container {
                 height: 100vh;
@@ -314,6 +263,14 @@
             }
             .header .logo {
                 font-size: 0.9rem;
+            }
+            .input-area input {
+                font-size: 0.8rem;
+                padding: 10px 14px;
+            }
+            .input-area button {
+                padding: 10px 20px;
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -337,9 +294,10 @@
             <div class="message system">📡 Type <span style="color:#00ff41;">help</span> for commands.</div>
         </div>
 
+        <!-- FIXED INPUT AREA — ALWAYS VISIBLE -->
         <div class="input-area">
             <span class="prompt">➜</span>
-            <input type="text" id="userInput" placeholder="Type command..." autofocus spellcheck="false" />
+            <input type="text" id="userInput" placeholder="Type message or command..." autofocus spellcheck="false" />
             <button id="sendBtn">EXEC</button>
         </div>
 
@@ -383,10 +341,10 @@
             }
         });
 
-        // Focus input
-        userInput.focus();
+        // Focus input on load
+        setTimeout(() => userInput.focus(), 100);
 
-        // Auto-scroll on new messages
+        // Auto-scroll
         const observer = new MutationObserver(() => {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
