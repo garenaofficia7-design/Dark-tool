@@ -1,0 +1,15 @@
+{
+  "name": "metrix-ai",
+  "version": "2.0.0",
+  "description": "EVOLUTION 2.0 — METRIX AI",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5",
+    "axios": "^1.6.2"
+  }
+      }
